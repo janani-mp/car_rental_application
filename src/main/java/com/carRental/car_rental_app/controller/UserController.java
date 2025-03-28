@@ -1,5 +1,6 @@
 package com.carRental.car_rental_app.controller;
 
+import com.carRental.car_rental_app.entity.Booking;
 import com.carRental.car_rental_app.entity.User;
 import com.carRental.car_rental_app.service.UserService;
 import org.springframework.data.domain.Page;
@@ -114,5 +115,21 @@ public class UserController {
         User user = userService.findByName(name);
         return ResponseEntity.ok(user);
     }
+
+    // RELATION
+
+    // Get all bookings for a user
+@GetMapping("/{userId}/bookings")
+public ResponseEntity<List<Booking>> getUserBookings(@PathVariable Long userId) {
+    return ResponseEntity.ok(userService.getUserBookings(userId));
+}
+
+// Create a booking for a user
+@PostMapping("/{userId}/bookings")
+public ResponseEntity<Booking> createBookingForUser(
+        @PathVariable Long userId,
+        @RequestBody Booking booking) {
+    return ResponseEntity.ok(userService.createBookingForUser(userId, booking));
+}
 
 }

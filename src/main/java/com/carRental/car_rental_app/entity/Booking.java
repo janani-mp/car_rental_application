@@ -25,10 +25,10 @@ public class Booking {
     @JsonIgnore // Prevents infinite recursion by ignoring user inside Booking
     private User user;
 
+    // vehicle <--> booking
     @ManyToOne
-    @JsonManagedReference // Booking can have Vehicle, but Vehicle may contain multiple bookings
     @JoinColumn(name = "vehicle_id")
-    @JsonIgnore  // Prevents infinite recursion by ignoring vehicle inside Booking
+    @JsonBackReference("vehicle-bookings") // Match reference name
     private Vehicle vehicle;
 
     private LocalDate startDate;
@@ -115,11 +115,11 @@ public class Booking {
 
 
 
-| GET       | `/api/bookings`                          done
-| GET       | `/api/bookings/{id}`                     done
-| POST      | `/api/bookings`                          done
-| PUT       | `/api/bookings/{id}`                     done
-| DELETE    | `/api/bookings/{id}`                     done
+| GET       | /api/bookings                          done
+| GET       | /api/bookings/{id}                     done
+| POST      | /api/bookings                          done
+| PUT       | /api/bookings/{id}                     done
+| DELETE    | /api/bookings/{id}                     done
 
 
 Pagination : http://localhost:9191/api/bookings/paginated?page=3&size=1                     done
@@ -128,3 +128,5 @@ JPQL :       http://localhost:9191/api/bookings/search-by-start-date?startDate=2
 JPA :
 
  */
+
+

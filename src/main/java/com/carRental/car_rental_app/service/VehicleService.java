@@ -1,14 +1,21 @@
 package com.carRental.car_rental_app.service;
 
-import com.carRental.car_rental_app.entity.Vehicle;
-import com.carRental.car_rental_app.repository.VehicleRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.carRental.car_rental_app.entity.Booking;
+import com.carRental.car_rental_app.entity.Vehicle;
+import com.carRental.car_rental_app.repository.BookingRepository;
+import com.carRental.car_rental_app.repository.VehicleRepository;
 
 @Service
 //@RequiredArgsConstructor
@@ -87,6 +94,60 @@ public class VehicleService {
     public void deleteByMake(String make) {
         vehicleRepository.deleteByMake(make);
     }
+
+
+    //RELATION vehicle <--> booking
+
+     @Autowired
+    private BookingRepository bookingRepository;
+
+    public List<Booking> getVehicleBookings(Long vehicleId) {
+        Vehicle vehicle = getVehicleById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        return vehicle.getBookings();
+    }
+
+    // public Booking createBookingForVehicle(Long vehicleId, Booking booking) {
+    //     Vehicle vehicle = getVehicleById(vehicleId)
+    //             .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        
+    //     // Check if vehicle is available
+    //     if (!vehicle.isAvailable()) {
+    //         throw new RuntimeException("Vehicle is not available for booking");
+    //     }
+
+    //     booking.setVehicle(vehicle);
+    //     return bookingRepository.save(booking);
+    // }
+
+    public Booking createBookingForVehicle(Long vehicleId, Booking booking) {
+        Vehicle vehicle = getVehicleById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        
+        // Enhanced availability check
+        if (!vehicle.isAvailable()) {
+            throw new RuntimeException("Vehicle with ID " + vehicleId + " is not available for booking");
+        }
+        
+        // Additional check for date conflicts
+        if (bookingRepository.existsByVehicleAndDateRange(
+                vehicle, 
+                booking.getStartDate(), 
+                booking.getEndDate())) {
+            throw new RuntimeException("Vehicle is already booked for the selected dates");
+        }
+    
+        booking.setVehicle(vehicle);
+        return bookingRepository.save(booking);
+    }
+
+    // JPQL: Find available vehicles in date range
+    public List<Vehicle> findAvailableVehicles(LocalDate startDate, LocalDate endDate) {
+        return vehicleRepository.findAvailableVehicles(startDate, endDate);
+    }
+
+    // JPA: Count bookings per vehicle
+    public List<Object[]> findVehiclesWithBookingCount() {
+        return vehicleRepository.countBookingsPerVehicle();
+    }
 }
-
-

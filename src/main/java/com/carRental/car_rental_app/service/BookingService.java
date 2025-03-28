@@ -1,14 +1,17 @@
 package com.carRental.car_rental_app.service;
 
-import com.carRental.car_rental_app.entity.Booking;
-import com.carRental.car_rental_app.repository.BookingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.carRental.car_rental_app.entity.Booking;
+import com.carRental.car_rental_app.repository.BookingRepository;
 
 @Service
 //@RequiredArgsConstructor

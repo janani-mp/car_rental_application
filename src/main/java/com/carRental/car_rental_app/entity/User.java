@@ -1,6 +1,6 @@
 package com.carRental.car_rental_app.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     private String name;
@@ -21,9 +21,8 @@ public class User {
     private String phone;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore   // Prevents infinite recursion when serializing
+    @JsonManagedReference // To handle JSON serialization of bookings
     private List<Booking> bookings;
-
 
     public Long getId() {
         return id;
@@ -68,38 +67,20 @@ public class User {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 
-# **API Endpoints & URLs:**
-| **Operation**        | **HTTP Method** | **URL**                                        |
+# *API Endpoints & URLs:*
+| *Operation*        | *HTTP Method* | *URL*                                        |
 |----------------------|-----------------|------------------------------------------------|
-| Create User          | POST            | `/api/users`                                  |          done
-| Get All Users        | GET             | `/api/users`                                  |          done
-| Get User by ID       | GET             | `/api/users/{id}`                             |          done
-| Update User by ID    | PUT             | `/api/users/{id}`                             |          done
-| Delete User by ID    | DELETE          | `/api/users/{id}`                             |          done - message?
-| Delete User by Name  | DELETE          | `/api/users/delete-by-name/{name}`            |          not done
-| Pagination           | GET             | `/api/users/paginated?page=0&size=5`          |          done
-| Sorting              | GET             | `/api/users/sorted?sortBy=name`               |          done
-| Pagination + Sorting | GET             | `/api/users/paginated-sorted?page=0&size=5&sortBy=name` |done
-| Search Users (JPQL)  | GET             | `/api/users/search?keyword=jane`              |          done
+| Create User          | POST            | /api/users                                  |          done
+| Get All Users        | GET             | /api/users                                  |          done
+| Get User by ID       | GET             | /api/users/{id}                             |          done
+| Update User by ID    | PUT             | /api/users/{id}                             |          done
+| Delete User by ID    | DELETE          | /api/users/{id}                             |          done - message?
+| Delete User by Name  | DELETE          | /api/users/delete-by-name/{name}            |          not done
+| Pagination           | GET             | /api/users/paginated?page=0&size=5          |          done
+| Sorting              | GET             | /api/users/sorted?sortBy=name               |          done
+| Pagination + Sorting | GET             | /api/users/paginated-sorted?page=0&size=5&sortBy=name |done
+| Search Users (JPQL)  | GET             | /api/users/search?keyword=jane              |          done
 
  */

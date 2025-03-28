@@ -2,8 +2,8 @@ package com.carRental.car_rental_app.controller;
 
 import com.carRental.car_rental_app.entity.Booking;
 import com.carRental.car_rental_app.service.BookingService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,4 +106,3 @@ public class BookingController {
 
 
 }
-

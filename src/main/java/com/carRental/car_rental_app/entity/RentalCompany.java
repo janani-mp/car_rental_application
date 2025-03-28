@@ -1,12 +1,17 @@
 package com.carRental.car_rental_app.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
 @NoArgsConstructor
-//@AllArgsConstructor
 @Builder
 public class RentalCompany {
 
@@ -22,11 +27,16 @@ public class RentalCompany {
     @Column(unique = true)
     private String email;
 
-    public RentalCompany(Long id, String name, String location, String email) {
+    @OneToMany(mappedBy = "rentalCompany", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // To handle JSON serialization
+    private List<Vehicle> vehicles;
+
+    public RentalCompany(Long id, String name, String location, String email, List<Vehicle> vehicles) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.email = email;
+        this.vehicles = vehicles;
     }
 
     public Long getId() {
@@ -60,6 +70,14 @@ public class RentalCompany {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
 }
 
 
@@ -76,14 +94,15 @@ public class RentalCompany {
 #
 
 |-------------------|------------|----------------------------------------------|
-| Get All           | GET        | `/api/rentalcompanies`                      |    done
-| Get By ID         | GET        | `/api/rentalcompanies/{id}`                 |    done
-| Create            | POST       | `/api/rentalcompanies`                      |    done
-| Update By ID      | PUT        | `/api/rentalcompanies/{id}`                 |    done
-| Delete By ID      | DELETE     | `/api/rentalcompanies/{id}`                 |    done
-| Delete By Name    | DELETE     | `/api/rentalcompanies/deleteByName/{name}`  |
-| Pagination        | GET        | `/api/rentalcompanies/pagination?page=0&size=5` | done
-| Sorting           | GET        | `/api/rentalcompanies/sorting?sortBy=name&direction=asc` | done
-| Find By Location  | GET        | `/api/rentalcompanies/byLocation?location=NYC` |  done
+| Get All           | GET        | /api/rentalcompanies                      |    done
+| Get By ID         | GET        | /api/rentalcompanies/{id}                 |    done
+| Create            | POST       | /api/rentalcompanies                      |    done
+| Update By ID      | PUT        | /api/rentalcompanies/{id}                 |    done
+| Delete By ID      | DELETE     | /api/rentalcompanies/{id}                 |    done
+| Delete By Name    | DELETE     | /api/rentalcompanies/deleteByName/{name}  |
+| Pagination        | GET        | /api/rentalcompanies/pagination?page=0&size=5 | done
+| Sorting           | GET        | /api/rentalcompanies/sorting?sortBy=name&direction=asc | done
+| Find By Location  | GET        | /api/rentalcompanies/byLocation?location=NYC |  done
 
  */
+

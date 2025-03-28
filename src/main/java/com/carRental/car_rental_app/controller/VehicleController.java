@@ -1,15 +1,26 @@
 package com.carRental.car_rental_app.controller;
 
-import com.carRental.car_rental_app.entity.Vehicle;
-import com.carRental.car_rental_app.repository.VehicleRepository;
-import com.carRental.car_rental_app.service.VehicleService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.carRental.car_rental_app.entity.Booking;
+import com.carRental.car_rental_app.entity.Vehicle;
+import com.carRental.car_rental_app.service.VehicleService;
 
 @RestController
 @RequestMapping("/api/vehicles")
@@ -107,4 +118,55 @@ public class VehicleController {
         vehicleService.deleteByMake(make);
         return ResponseEntity.noContent().build();   //204 no content for success
     }
+
+
+    //RELATION vehicle <--> booking
+
+    
+    // Get all bookings for a vehicle
+    @GetMapping("/{vehicleId}/bookings")
+    public ResponseEntity<List<Booking>> getVehicleBookings(@PathVariable Long vehicleId) {
+        return ResponseEntity.ok(vehicleService.getVehicleBookings(vehicleId));
+    }
+
+    // Create booking for a specific vehicle
+    // @PostMapping("/{vehicleId}/bookings")
+    // public ResponseEntity<Booking> createBookingForVehicle(
+    //         @PathVariable Long vehicleId,
+    //         @RequestBody Booking booking) {
+    //     return ResponseEntity.ok(vehicleService.createBookingForVehicle(vehicleId, booking));
+    // }
+
+    @PostMapping("/{vehicleId}/bookings")
+public ResponseEntity<?> createBookingForVehicle(
+        @PathVariable Long vehicleId,
+        @RequestBody Booking booking) {
+    try {
+        return ResponseEntity.ok(vehicleService.createBookingForVehicle(vehicleId, booking));
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                    "error", "Booking failed",
+                    "message", e.getMessage(),
+                    "status", HttpStatus.BAD_REQUEST.value()
+                ));
+    }
 }
+
+    // JPQL: Find available vehicles in date range
+    @GetMapping("/available")
+    public ResponseEntity<List<Vehicle>> getAvailableVehicles(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+        return ResponseEntity.ok(vehicleService.findAvailableVehicles(start, end));
+    }
+
+    // JPA: Find vehicles with booking count
+    @GetMapping("/with-booking-count")
+    public ResponseEntity<List<Object[]>> getVehiclesWithBookingCount() {
+        return ResponseEntity.ok(vehicleService.findVehiclesWithBookingCount());
+    }
+}
+

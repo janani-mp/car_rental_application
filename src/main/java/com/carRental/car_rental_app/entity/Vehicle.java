@@ -1,10 +1,19 @@
 package com.carRental.car_rental_app.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 //@Getter
@@ -23,14 +32,16 @@ public class Vehicle {
     private double ratePerDay;
     private boolean available;
 
-    @JsonIgnore
+   // @JsonIgnore
+   // vehicle <--> rentalcompany
     @ManyToOne
     @JoinColumn(name = "rental_company_id")
     @JsonBackReference  // Prevents recursive nesting in JSON output
     private RentalCompany rentalCompany;
 
-    @JsonIgnore
+    //vehicle <--> booking
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("vehicle-bookings") // Changed reference name
     private List<Booking> bookings;
 
     public Long getId() {
@@ -100,15 +111,15 @@ public class Vehicle {
 
 
 /*
-- Get all vehicles:         `GET /api/vehicles`             done
-- Get vehicle by ID:        `GET /api/vehicles/{id}`        done
-- Create vehicle:           `POST /api/vehicles`            done
-- Update vehicle:           `PUT /api/vehicles/{id}`        done
-- Delete vehicle by ID:     `DELETE /api/vehicles/{id}`     done
-- Delete vehicles by make:  `DELETE /api/vehicles/delete-by-make/{make}`                not done
-- Pagination:               `GET /api/vehicles/paginated?page=0&size=5`                 done
-- Sorting:                  `GET /api/vehicles/sorted?sortBy=ratePerDay&direction=asc`  done
-- JPQL search:              `GET /api/vehicles/registration-pattern?pattern=ABC`        done
+- Get all vehicles:         GET /api/vehicles             done
+- Get vehicle by ID:        GET /api/vehicles/{id}        done
+- Create vehicle:           POST /api/vehicles            done
+- Update vehicle:           PUT /api/vehicles/{id}        done
+- Delete vehicle by ID:     DELETE /api/vehicles/{id}     done
+- Delete vehicles by make:  DELETE /api/vehicles/delete-by-make/{make}                not done
+- Pagination:               GET /api/vehicles/paginated?page=0&size=5                 done
+- Sorting:                  GET /api/vehicles/sorted?sortBy=ratePerDay&direction=asc  done
+- JPQL search:              GET /api/vehicles/registration-pattern?pattern=ABC        done
  */
 
 
@@ -123,3 +134,5 @@ public class Vehicle {
         "available": true
     }
 */
+
+
